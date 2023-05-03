@@ -1,0 +1,60 @@
+body {
+    color: black;
+    background-color: rgb(7, 36, 39);
+  }
+  
+.dark_mode{
+    background-color: #252525;
+    color: black;
+  }
+  
+h1{
+    color:#000000;
+    background-color: #9d2c2c;
+    margin-left: 192px;
+    font-size: 28px;
+    margin-top: 0px;
+  }
+  
+h1.solid{border-style: solid;}
+  
+button{
+    float: right;
+    background-color: #303030;
+    outline-color: transparent;
+  }
+  
+.header{
+    top: 0;
+  }
+  
+.search_box{
+    margin-top: 7px;
+    float: right;
+  }
+  
+p.dotted_left{
+    border-style: solid;
+    float: left;
+  }
+  
+p.dotted_right{
+    border-style: solid;
+    float: right;
+  }
+  
+p.solid{
+    border-style: solid;
+    margin-left: 200px;
+  }
+  
+h2.solid{
+    border-style: solid;
+    border-radius: 200px;
+    margin-left: 202px;
+    text-align: center;
+    border-color: black;
+    color: black;
+    background-color: #000088;
+    text-indent: 50px;
+  }
