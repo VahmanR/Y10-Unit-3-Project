@@ -21,9 +21,11 @@ var enemyGroup, enemy1, enemy2; //Group and variables for enemies
 
 let bgMusic, soundButton, soundIcon; //To create the sound button
 
+let pewSound, jumpSound, stepSound; //Sounds for the player's actions
+
 let cookieButton, loadButton; //Buttons for saving and loading data
 
-var playerSavedX, playerSavedY, enemy1SavedX, enemy1SavedY, enemy2SavedX, enemy2SavedY, savedPadsUsed; //Variables to save data to
+var playerSavedX, playerSavedY, enemy1SavedX, enemy1SavedY, enemy2SavedX, enemy2SavedY, savedPadsUsed, savedLastMove, savedUses; //Variables to save data to
 
 var lastMove; //Variable for saving the player's last move
 
@@ -32,6 +34,8 @@ var uses; //Variable for uses of the shift key
 function preload() { //Loading sounds and images to use later
 
     bgMusic = loadSound("assets/Route 201 (Day).mp3"); //Loading the file for the background music
+    pewSound = loadSound("assets/playerAttack.mp3"); //Loading the file for the attack sound effect
+    jumpSound = loadSound("assets/playerJump.mp3"); //Loading the file for the jump sound effect
     soundIcon = loadImage("assets/soundIcon.png"); //Loading the image for the sound button
 }
 
@@ -165,6 +169,7 @@ function draw() { //Draw function creates all the elements which will be updated
 
         player.velocityY = -10; //Setting the player's Y velocity to -10, the number is negative because pressing up should make the player go up and the Y value increases from top to bottom
         player.velocityY = player.velocityY + 0.8; //Makes the players Y velocity increase by 0.8, this makes the player slowly fall down, essentially gravity
+        jumpSound.play(); //Playing the jumping sound effect
         console.log("UP"); //Prints UP to the console. Doesn't affect gameplay, just keeps a log of all of the players moves
     }
 
@@ -204,6 +209,7 @@ function draw() { //Draw function creates all the elements which will be updated
     if (keyWentDown("w")) { //Checks if the w key has been pressed, uses keyWentDown just like when checking for the up key
 
         attackPlayer(playerAttack); //Calls the player attack function, defined around line 400
+        pewSound.play(); //Playing the sound effect for the player's attack
         console.log("W") //Prints W to the console, no effect on gameplay
         //This section is to randomly place the red enemy on the 1st or 2nd layer at a random x position
         var xPos = Math.floor(Math.random() * 1000); //Creates a variable for x position and gives it a value using Math.random
@@ -275,153 +281,153 @@ function draw() { //Draw function creates all the elements which will be updated
 
 
 //Function to stop the player by setting their x and y velocities to 0, used when the player collides with the borders
-function stopPlayer() {
+function stopPlayer() { //Declaring the function
 
-    player.velocityX = 0;
-    player.velocityY = 0;
+    player.velocityX = 0; //Making the players x velocity 0
+    player.velocityY = 0; //Making the players y velocity 0
 }
 
 //Function to bounce the player off of the padGroup, works more like a teleport
-function bouncePlayer(target, pad) {
+function bouncePlayer(target, pad) { //Declaring the function and the parameters
 
     if (padsUsed % 2 == 0) { //Checks if the pads used is a multiple of 2 and makes the player go up and increases the pads used by 1
 
-        target.position.y -= 160;
-        target.velocityX = 0;
-        target.velocityY = 0;
-        padsUsed += 1;
+        target.position.y -= 160; //Moving the player up
+        target.velocityX = 0; //Making their x velocity 0
+        target.velocityY = 0; //Making their y velocity 0
+        padsUsed += 1; //Increasing the padsUsed by 1
     }
 
     else if (padsUsed % 2 !== 0 && target.position.y + 80 < 481) { //If the pads used is not a multiple of 2 the player is sent down and the pads used increases by 1
 
-        target.position.y += 80;
-        target.velocityX = 0;
-        target.velocityY = 0;
-        padsUsed += 1;
+        target.position.y += 80; //Moving the player down
+        target.velocityX = 0; //Making their x velocity 0
+        target.velocityY = 0; //Making their y velocity 0
+        padsUsed += 1; //Increasing the padsUsed by 1
     }
 
 
 }
 
 //Function to send player to the start if they collide with something dangerous, sets the variables to their initial state as if the hasn't started yet
-function removePlayer(target, spike) {
+function removePlayer(target, spike) { //Declaring the function and parameters
 
-    target.velocityX = 0;
-    target.velocityY = 0;
-    target.position.x = 100;
-    target.position.y = 480;
-    padsUsed = 0;
+    target.velocityX = 0; //Making the player's velocity 0
+    target.velocityY = 0; //Making the y velocity 0
+    target.position.x = 100; //Setting the player to the original x position
+    target.position.y = 480; //Setting the player to the original y position
+    padsUsed = 0; //Resetting the padsUsed to 0
 
 }
 
 //Function to "remove" the player's attack. Does this by hiding it off screen so it can be used again when needed
-function removeAttack(attack, target) {
-    attack.position.x = -25;
+function removeAttack(attack, target) { //Declaring the function and parameters
+    attack.position.x = -25; //Placing the attack off screen
 }
 //Function to "remove" the enemy and the player's attack. Hides both off screen
-function removeEnemy(attack, target) {
-    attack.position.x = -25;
-    target.position.x = -25;
-}
+function removeEnemy(attack, target) { //Declaring the function and the parameters
+    attack.position.x = -25; //Moving the attack off screen
+    target.position.x = -25; //Moving the target off screen
+}w
 
 
 //Functions to move projectiles across screen, each of the 4 moveProjectile functions move the projectile in a certain direction
 //The differences between the functions are the X or Y velocities and the point where the projectile is sent back to its starting point
-function moveProjectileLeft(projectile) {
+function moveProjectileLeft(projectile) { //Declaring the function and parameters
 
-    projectile.velocityX = -12.5;
+    projectile.velocityX = -12.5; //Making the projectile travel left
 
-    if (projectile.position.x < 1) {
+    if (projectile.position.x < 1) { //Checking if the projectile has passed the left border
 
-        projectile.position.x = 1000;
+        projectile.position.x = 1000; //Setting it to its original x position
     }
 }
 
-function moveProjectileRight(projectile) {
+function moveProjectileRight(projectile) { //Declaring the function and parameters
 
-    projectile.velocityX = 12.5;
+    projectile.velocityX = 12.5; //Making the projectile travel right
 
-    if (projectile.position.x > 900) {
+    if (projectile.position.x > 900) { //Checking if it has passed the right border
 
-        projectile.position.x = -100;
+        projectile.position.x = -100; //Setting it to its original x position
     }
 }
 
-function moveProjectileDown(projectile) {
+function moveProjectileDown(projectile) { //Declaring the function and parameters
 
-    projectile.velocityY = 6.25;
+    projectile.velocityY = 6.25; //Making the projectile travel down
 
-    if (projectile.position.y > 350) {
+    if (projectile.position.y > 350) { //Checking if it has passed its y boundary
 
-        projectile.position.y = -100;
+        projectile.position.y = -100; //Placing it at its original y position
     }
 }
 
-function moveProjectileUp(projectile) {
+function moveProjectileUp(projectile) { //Declaring the function and parameters
 
-    projectile.velocityY = -6.25;
+    projectile.velocityY = -6.25; //Making the projectile travel up
 
-    if (projectile.position.y < 0) {
+    if (projectile.position.y < 0) { //Checking if it has passed its y boundary
 
-        projectile.position.y = 340;
+        projectile.position.y = 340; //Setting it to its original y position
     }
 }
 
 //Function to end the game. Used in the collision between the player and the end point. Sets variables back to their initial values and logs Game End in the console
-function reachEnd(target) {
+function reachEnd(target) { //Declaring the function and parameters
 
-    console.log("Game End");
-    target.position.x = 100;
-    target.position.y = 480;
-    enemy1.position.x = 500;
-    padsUsed = 0;
+    console.log("Game End"); //Printing Game End to the console. No effect on gameplay
+    target.position.x = 100; //Setting the player to the original x position
+    target.position.y = 480; //Setting the player to the original y position
+    enemy1.position.x = 500; //Setting enemy1 to the original x position
+    padsUsed = 0; //Resetting padsUsed
 }
 
 
 //Function to play the background music
-function playBgMusic() {
+function playBgMusic() { //Declaring the function
 
     if (timesPressed % 2 == 0) { //Checks if the button was pressed an even number of times, if it has the music is played and the timesPressed is increase by 1
 
-        bgMusic.loop();
-        bgMusic.play();
-        timesPressed += 1;
+        bgMusic.loop(); //Setting up the bgMusic to loop
+        bgMusic.play(); //Playing the bgMusic
+        timesPressed += 1; //Increasing the timesPressed by 1
     }
 
     else { //The music is stopped and timesPressed is increased by 1 if the timesPressed was an odd number
 
-        bgMusic.stop();
-        timesPressed += 1;
+        bgMusic.stop(); //Stopping the bgMusic
+        timesPressed += 1; //Increasing timesPressed by 1
     }
 
 
 }
 
 //Function to move the player's attack
-function attackPlayer(attack) {
+function attackPlayer(attack) { //Declaring the function and parameters
 
     if (lastMove == "right") { //Checks if the right arrow was pressed and makes the attack move to the right of the player
 
-        attack.position.x = player.position.x;
-        attack.position.y = player.position.y;
-        attack.velocityX = 15;
-        player.velocityX = player.velocityX - 12.5;
+        attack.position.x = player.position.x; //Setting the position of the attack to the players position
+        attack.position.y = player.position.y; //Setting the position of the attack to the players position
+        attack.velocityX = 15; //Making the attack go right
+        player.velocityX = player.velocityX - 12.5; //Pushing the player back slightly
     }
 
     else if (lastMove == "left") { //Checks if the left arrow was pressed and makes the attack move to the left of the player
 
-        attack.position.x = player.position.x;
-        attack.position.y = player.position.y;
-        attack.velocityX = -15;
-        player.velocityX = player.velocityX + 12.5;
+        attack.position.x = player.position.x; //Setting the position of the attack to the players position
+        attack.position.y = player.position.y; //Setting the position of the attack to the players position
+        attack.velocityX = -15; //Making the attack go left
+        player.velocityX = player.velocityX + 12.5; //Pushing the player back slightly
     }
 
     else { //If no key has been pressed the attack goes to the right of the player
 
-        attack.position.x = player.position.x;
-        attack.position.y = player.position.y;
-        attack.velocityX = 15;
-        player.velocityX = player.velocityX - 12.5;
+        attack.position.x = player.position.x; //Setting the position of the attack to the players position
+        attack.position.y = player.position.y; //Setting the position of the attack to the players position
+        attack.velocityX = 15; //Making the attack go right
+        player.velocityX = player.velocityX - 12.5; //Pushing the player back slightly
     }
 
 
@@ -429,7 +435,7 @@ function attackPlayer(attack) {
 }
 
 //Function to move the enemy. Unused in the game
-function moveEnemy(enemy) {
+function moveEnemy(enemy) { //Declaring the function and parameters
 
     move1 = Math.floor(Math.random()) //Making move 1 a random number
 
@@ -437,56 +443,59 @@ function moveEnemy(enemy) {
     move2 = Math.floor(Math.random()) * 10; //Making move to a random number and multiplying it by 10
 
     //Adds move 2 to the enemy's x position if move 1 is even, otherwise subtracts move 2 from the enemy's x position
-    if (move1 % 2 == 0) {
+    if (move1 % 2 == 0) { //Checking if move1 is divisible by 2
 
-        enemy.position.x += move2;
+        enemy.position.x += move2; //Moving the enemy right by move2
     }
     else {
 
-        enemy.position.x -= move2;
+        enemy.position.x -= move2; //Moving the enemy left by move2
     }
 }
 
 //Function to generate a random number between to numbers
-function numGen(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
+function numGen(min, max) { //Declaring the function and parameters
+    return Math.floor(Math.random() * (max - min + 1) + min); //Returning the random number between min and max
 }
 
 //Function to save the state of the game by assigning the current values to the saved version of the value
-function savePosition() {
-    playerSavedX = player.position.x;
-    playerSavedY = player.position.y;
-    enemy1SavedX = enemy1.position.x;
-    enemy1SavedY = enemy1.position.y;
-    enemy2SavedX = enemy2.position.x;
-    enemy2SavedY = enemy2.position.y;
-    savedPadsUsed = padsUsed;
+function savePosition() { //Declaring the function
+    playerSavedX = player.position.x; //Saving the player's position
+    playerSavedY = player.position.y; //Saving the player's position
+    enemy1SavedX = enemy1.position.x; //Saving the enemy's position
+    enemy1SavedY = enemy1.position.y; //Saving the enemy's position
+    enemy2SavedX = enemy2.position.x; //Saving the enemy's position
+    enemy2SavedY = enemy2.position.y; //Saving the enemy's position
+    savedPadsUsed = padsUsed; //Saving the padsUsed
+    savedLastMove = lastMove; //Saving the lastMove
+    savedUses = uses; //Saving the uses
 }
 
 //Makes the current values of the game variables into the saved version to restore the save game state
-function loadSave() {
-    player.position.x = playerSavedX;
-    player.position.y = playerSavedY;
-    enemy1.position.x = enemy1SavedX;
-    enemy1.position.y = enemy1SavedY;
-    enemy2.position.x = enemy2SavedX;
-    enemy2.position.y = enemy2SavedY;
-    lastMove = ""
-    padsUsed = savedPadsUsed;
+function loadSave() { //Declaring the function
+    player.position.x = playerSavedX; //Switching the current value to the saved value
+    player.position.y = playerSavedY; //Switching the current value to the saved value
+    enemy1.position.x = enemy1SavedX; //Switching the current value to the saved value
+    enemy1.position.y = enemy1SavedY; //Switching the current value to the saved value
+    enemy2.position.x = enemy2SavedX; //Switching the current value to the saved value
+    enemy2.position.y = enemy2SavedY; //Switching the current value to the saved value
+    lastMove = savedLastMove; //Switching the current value to the saved value
+    padsUsed = savedPadsUsed;  //Switching the current value to the saved value
+    uses = savedUses; //Switching the current value to the saved value
 }
 
 //Function to make an enemy follow the player, does this by moving the enemy towards the player depending on the difference between their x and y values
-function followPlayer(enemy) {
-    if (player.position.x - enemy.position.x > 0) {
-        enemy.velocityX = 3.8;
+function followPlayer(enemy) { //Declaring the function and parameters
+    if (player.position.x - enemy.position.x > 0) { //Seeing if the player is to the right of the enemy
+        enemy.velocityX = 3.8; //Making the enemy travel right
     }
-    else if (player.position.x - enemy.position.x < 0) {
-        enemy.velocityX = -3.8;
+    else if (player.position.x - enemy.position.x < 0) { //Seeing the player is left of the enemy
+        enemy.velocityX = -3.8; //Making the enemy travel left
     }
-    if (player.position.y - enemy.position.y > 0) {
-        enemy.velocityY = 2;
+    if (player.position.y - enemy.position.y > 0) { //Seeing if the player is below the enemy
+        enemy.velocityY = 2; //Making the enemy move down
     }
-    else if (player.position.y - enemy.position.y < 0) {
-        enemy.velocityY = -2;
+    else if (player.position.y - enemy.position.y < 0) { //Seeing if the player is above the enemy
+        enemy.velocityY = -2; //Moving the enemy up
     }
 }
